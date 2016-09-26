@@ -1,0 +1,24 @@
+{
+  "name": "jsonapi-boom",
+  "version": "1.0.0",
+  "description": "Boom with JSON-API support",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cesine/jsonapi-boom.git"
+  },
+  "keywords": [
+    "boom",
+    "error",
+    "jsonapi"
+  ],
+  "author": "cesine",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cesine/jsonapi-boom/issues"
+  },
+  "homepage": "https://github.com/cesine/jsonapi-boom#readme"
+}
