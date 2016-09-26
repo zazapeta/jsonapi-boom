@@ -4,8 +4,59 @@ var expect = chai.expect;
 var JsonApiBoom = require('./../');
 
 describe('JsonApiBoom', function() {
+  afterEach(function() {
+    JsonApiBoom.docs = {
+      url: ''
+    };
+  });
+
   it('should load', function() {
     expect(JsonApiBoom).to.be.defined;
+  });
+
+  describe('implements JSON-API', function() {
+    it('should support all attributes', function() {
+      JsonApiBoom.docs = {
+        url: 'http://api.example.com/docs/errors'
+      };
+
+      var err = JsonApiBoom.badRequest({
+        id: 'abc-123',
+        code: 'y-5678',
+        source: {
+          parameter: 'included'
+        },
+        meta: {
+          something: 'else'
+        },
+        err: new Error('Opps!')
+      });
+
+      expect(err.output).to.deep.equal({
+        statusCode: 400,
+        payload: {
+          id: 'abc-123',
+          links: {
+            about: 'http://api.example.com/docs/errors/y-5678'
+          },
+          status: 400,
+          statusCode: 400,
+          code: 'y-5678',
+          title: 'Bad Request',
+          error: 'Bad Request',
+          detail: 'Opps!',
+          message: 'Opps!',
+          source: {
+            pointer: '',
+            parameter: 'included'
+          },
+          meta: {
+            something: 'else'
+          },
+        },
+        headers: {}
+      });
+    });
   });
 
   describe('extends boom', function() {
@@ -25,9 +76,23 @@ describe('JsonApiBoom', function() {
       expect(err.output).to.deep.equal({
         statusCode: 500,
         payload: {
+          id: '',
+          links: {
+            about: '/0'
+          },
+          status: 500,
+          code: '0',
+          title: 'Internal Server Error',
+          error: 'Internal Server Error',
+          detail: 'An internal server error occurred',
+          source: {
+            pointer: '',
+            parameter: ''
+          },
           statusCode: 500,
           error: 'Internal Server Error',
-          message: 'An internal server error occurred'
+          message: 'An internal server error occurred',
+          meta: {}
         },
         headers: {}
       });
@@ -585,7 +650,7 @@ describe('JsonApiBoom', function() {
           // 500s
           'internal', 'notImplemented', 'badGateway', 'serverUnavailable',
           'gatewayTimeout', 'badImplementation'
-        ].forEach((name) => {
+        ].forEach(function(name) {
 
           var err = JsonApiBoom[name]();
           expect(err.stack).to.not.match(/\/lib\/index\.js/);
@@ -594,5 +659,5 @@ describe('JsonApiBoom', function() {
         done();
       });
     });
-  })
+  });
 });
