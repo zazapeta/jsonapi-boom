@@ -4,7 +4,8 @@
   "description": "Boom with JSON-API support",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test",
+    "lint": "jshint index.js test"
   },
   "repository": {
     "type": "git",
@@ -22,9 +23,11 @@
   },
   "homepage": "https://github.com/cesine/jsonapi-boom#readme",
   "dependencies": {
-    "boom": "^4.0.0"
+    "boom": "^4.0.0",
+    "debug": "^2.2.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "mocha": "^3.0.2"
   }
 }
