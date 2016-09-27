@@ -90,4 +90,18 @@ Object.keys(Boom).map(function(attrib) {
   };
 });
 
+JsonApiBoom.serialize = function(err) {
+  return {
+    errors: [{
+      status: err.output.payload.status,
+      code: err.output.payload.code,
+      title: err.output.payload.title,
+      detail: err.output.payload.detail,
+      id: err.output.payload.id,
+      source: err.output.payload.source,
+      links: err.output.payload.links,
+      meta: err.output.payload.meta
+    }]
+  };
+}
 module.exports = JsonApiBoom;

@@ -57,6 +57,36 @@ describe('JsonApiBoom', function() {
         headers: {}
       });
     });
+
+    it('should can serialize into json-api', function() {
+      JsonApiBoom.docs = {
+        url: 'http://api.example.com/docs/errors'
+      };
+
+      var err = JsonApiBoom.unauthorized({
+        id: 'abc-123',
+        code: 'y-996',
+        err: new Error('Opps!')
+      });
+
+      expect(JsonApiBoom.serialize(err)).to.deep.equal({
+        errors: [{
+          id: 'abc-123',
+          links: {
+            about: 'http://api.example.com/docs/errors/y-996'
+          },
+          status: '401',
+          code: 'y-996',
+          title: 'Unauthorized',
+          detail: 'Opps!',
+          source: {
+            pointer: '',
+            parameter: ''
+          },
+          meta: {}
+        }]
+      });
+    });
   });
 
   describe('extends boom', function() {
