@@ -39,7 +39,7 @@ describe('JsonApiBoom', function() {
           links: {
             about: 'http://api.example.com/docs/errors/y-5678'
           },
-          status: 400,
+          status: '400',
           statusCode: 400,
           code: 'y-5678',
           title: 'Bad Request',
@@ -80,11 +80,11 @@ describe('JsonApiBoom', function() {
           links: {
             about: '/0'
           },
-          status: 500,
+          status: '500',
           code: '0',
           title: 'Internal Server Error',
           error: 'Internal Server Error',
-          detail: 'An internal server error occurred',
+          detail: 'Internal Server Error',
           source: {
             pointer: '',
             parameter: ''

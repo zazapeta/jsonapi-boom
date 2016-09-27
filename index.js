@@ -26,7 +26,7 @@ Object.keys(Boom).map(function(attrib) {
       originalErr = arguments[0];
       statusCode = arguments[1];
       message = arguments[2];
-    } else if (attrib === 'unauthorized') {
+    } else if (attrib === 'unauthorized' && (!arguments[0] || arguments[1])) {
       message = arguments[0];
       headers = arguments[1];
     } else if (typeof arguments[0] === 'object' && arguments[0].err) {
@@ -50,16 +50,20 @@ Object.keys(Boom).map(function(attrib) {
     }
 
     /* id: a unique identifier for this particular occurrence of the problem. */
-    err.output.payload.id = options.id || '';
+    err.output.payload.id = options.id || err.output.payload.id || '';
 
     /* status: the HTTP status code applicable to this problem, expressed as a string value. */
-    err.output.payload.status = err.output.payload.statusCode;
+    err.output.payload.status = err.output.payload.statusCode.toString();
 
     /* title: a short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization. */
     err.output.payload.title = options.title || err.output.payload.error;
 
     /* detail: a human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized. */
-    err.output.payload.detail = options.detail || err.output.payload.message;
+    if (err.output.payload.statusCode < 500) {
+      err.output.payload.detail = options.detail || err.output.payload.message;
+    } else {
+      err.output.payload.detail = options.detail || err.output.payload.title;
+    }
 
     /* code: an application-specific error code, expressed as a string value. */
     err.output.payload.code = options.code || '0';
