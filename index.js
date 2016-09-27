@@ -60,9 +60,9 @@ Object.keys(Boom).map(function(attrib) {
 
     /* detail: a human-readable explanation specific to this occurrence of the problem. Like title, this field’s value can be localized. */
     if (err.output.payload.statusCode < 500) {
-      err.output.payload.detail = options.detail || err.output.payload.message;
+      err.output.payload.detail = options.detail || err.output.payload.message || err.output.payload.error;
     } else {
-      err.output.payload.detail = options.detail || err.output.payload.title;
+      err.output.payload.detail = options.detail || err.output.payload.error;
     }
 
     /* code: an application-specific error code, expressed as a string value. */
