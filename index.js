@@ -69,18 +69,17 @@ Object.keys(Boom).map(function(attrib) {
     err.output.payload.code = options.code || '0';
 
     /* source: an object containing references to the source of the error, optionally including any of the following members: */
-    /* pointer: a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute]. */
-    /* parameter: a string indicating which URI query parameter caused the error. */
     options.source = options.source || {};
+    /* pointer: a JSON Pointer [RFC6901] to the associated entity in the request document [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute]. */
     options.source.pointer = options.source.pointer || '';
+    /* parameter: a string indicating which URI query parameter caused the error. */
     options.source.parameter = options.source.parameter || '';
     err.output.payload.source = options.source;
 
     /* links: a links object containing the following members: */
     /* about: a link that leads to further details about this particular occurrence of the problem. */
-    err.output.payload.links = options.links || {
-      about: JsonApiBoom.docs.url + '/' + err.output.payload.code
-    };
+    err.output.payload.links = options.links || {};
+    err.output.payload.links.about = err.output.payload.links.about ||  JsonApiBoom.docs.url + '/' + err.output.payload.code;
 
     /* meta: a meta object containing non-standard meta-information about the error. */
     err.output.payload.meta = options.meta || {};
