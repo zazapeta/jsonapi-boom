@@ -9,12 +9,12 @@ var JsonApiBoom = {
   }
 };
 
-Object.keys(Boom).map(function(attrib) {
-  if (typeof Boom[attrib] !== 'function') {
+Object.keys(Boom).map(function (key) {
+  if (typeof Boom[key] !== 'function') {
     return;
   }
 
-  JsonApiBoom[attrib] = function() {
+  JsonApiBoom[key] = function () {
     var err;
     var originalErr;
     var headers;
@@ -22,11 +22,11 @@ Object.keys(Boom).map(function(attrib) {
     var message = '';
     var options = {};
 
-    if (attrib === 'wrap') {
+    if (key === 'wrap') {
       originalErr = arguments[0];
       statusCode = arguments[1];
       message = arguments[2];
-    } else if (attrib === 'unauthorized' && (!arguments[0] || arguments[1])) {
+    } else if (key === 'unauthorized' && (!arguments[0] || arguments[1])) {
       message = arguments[0];
       headers = arguments[1];
     } else if (typeof arguments[0] === 'object' && arguments[0].err) {
@@ -37,16 +37,16 @@ Object.keys(Boom).map(function(attrib) {
       message = arguments[0];
       originalErr = arguments[1];
     }
-    debug(attrib, options, message, err);
+    debug(key, options, message, err);
 
-    if (attrib === 'wrap') {
+    if (key === 'wrap') {
       // handle wrap's signature
-      err = Boom[attrib].apply(this, [originalErr, statusCode, message]);
+      err = Boom[key].apply(this, [originalErr, statusCode, message]);
     } else if (headers) {
       // handle unauthorized headers
-      err = Boom[attrib].apply(this, arguments);
+      err = Boom[key].apply(this, arguments);
     } else {
-      err = Boom[attrib].apply(this, [message, originalErr]);
+      err = Boom[key].apply(this, [message, originalErr]);
     }
 
     /* id: a unique identifier for this particular occurrence of the problem. */
@@ -79,7 +79,7 @@ Object.keys(Boom).map(function(attrib) {
     /* links: a links object containing the following members: */
     /* about: a link that leads to further details about this particular occurrence of the problem. */
     err.output.payload.links = options.links || {};
-    err.output.payload.links.about = err.output.payload.links.about ||  JsonApiBoom.docs.url + '/' + err.output.payload.code;
+    err.output.payload.links.about = err.output.payload.links.about || JsonApiBoom.docs.url + '/' + err.output.payload.code;
 
     /* meta: a meta object containing non-standard meta-information about the error. */
     err.output.payload.meta = options.meta || {};
@@ -89,18 +89,42 @@ Object.keys(Boom).map(function(attrib) {
   };
 });
 
-JsonApiBoom.serialize = function(err) {
+JsonApiBoom.serialize = function (err) {
   return {
     errors: [{
       status: err.output.payload.status,
-      code: err.output.payload.code,
-      title: err.output.payload.title,
+      code  : err.output.payload.code,
+      title : err.output.payload.title,
       detail: err.output.payload.detail,
-      id: err.output.payload.id,
+      id    : err.output.payload.id,
       source: err.output.payload.source,
-      links: err.output.payload.links,
-      meta: err.output.payload.meta
+      links : err.output.payload.links,
+      meta  : err.output.payload.meta
     }]
   };
-}
-module.exports = JsonApiBoom;
+};
+
+
+// catch boom errors
+// inspired by https://github.com/zazapeta/express-boom
+
+module.exports = function () {
+  return function (req, res, next) {
+    if (res.boom) {
+      throw new Error('boom already exists on response object');
+    }
+
+    res.boom = {};
+
+    Object.keys(JsonApiBoom).forEach((key) => {
+      if (typeof JsonApiBoom[key] !== 'function') {
+        return;
+      }
+      res.boom[key] = function(){
+        let boomed = JsonApiBoom[key].apply(this, arguments);
+        res.status(boomed.output.statusCode).send(boomed.output.payload);
+      };
+    });
+    next();
+  };
+};
