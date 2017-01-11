@@ -1,4 +1,34 @@
-# jsonapi-boom
+# usage 
+```
+var express = require('express');
+var boom = require('./middleware-express-jsonapi-boom');
+
+var app = express();
+
+app.use(boom());
+
+app.use(function (req, res) {
+  // some validation check fail and returns an object : reasons
+  
+  return res.boom.forbidden({
+        id    : '76876',
+        code  : '123',
+        title : 'Invalid Attribute',
+        source: {
+          pointer  : '/data/attributes/id'
+        },
+        links : {
+          about: 'http://jsonapi.org/format/#error-objects'
+        },
+        meta  : {
+          comments: 'its a json api error'
+        },
+        err   : new Error('The id cannot be updated')
+      });
+});
+      
+```
+# middleware-express-jsonapi-boom
 
 [Boom](https://github.com/hapijs/boom) with [JSON-api error](http://jsonapi.org/format/#error-objects) support.
 
